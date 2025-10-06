@@ -1,59 +1,24 @@
 name: CI
 
-on: [push]
-
-jobs:
-    sast_scan:
-        name: Run Static Code Scan
-        runs-on: ubuntu-latest
-        
-        steps:
-        - name: Checkout code
-            uses: actions/checkout@v5.0.0
-            
-        - name: Set up Python
-            uses: actions/setup-python@v5.0.0
-            with:
-                python-version: 3.8
-
-name: build
 on:
   push:
     branches:
       - main
   pull_request:
+
 jobs:
   sast_scan:
     name: Run Static Code Scan
     runs-on: ubuntu-20.04
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.28.0
-        env:
-          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db:2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          scan-type: 'fs'
-          ignore-unfixed: true
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL'
-
-name: build
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-jobs:
-  sast_scan:
-    name: Run Static Code Scan
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+          python-version: '3.8'
 
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@0.28.0
@@ -71,4 +36,3 @@ jobs:
         with:
           name: trivy-results
           path: trivy-results.sarif
-          
